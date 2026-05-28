@@ -47,12 +47,16 @@ const Achievement = ({ isDarkMode }) => {
     return { left: x, top: y };
   };
 
+  const handleClick = (cert) => {
+    window.open(cert.image, '_blank');
+  };
+
   const hoveredCert = hoveredIndex !== null ? sortedCertificates[hoveredIndex] : null;
 
   return (
     <section
       id="achievement"
-      className={`relative py-20 px-6 scroll-mt-20 transition-colors duration-500 overflow-hidden ${
+      className={`relative py-10 px-6 scroll-mt-8 transition-colors duration-500 overflow-hidden ${
         isDarkMode ? 'bg-[#0a0a0a]' : 'bg-zinc-50'
       }`}
       onMouseMove={handleMouseMove}
@@ -74,7 +78,6 @@ const Achievement = ({ isDarkMode }) => {
       </div>
 
       <div className="relative max-w-5xl mx-auto z-10">
-
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -102,6 +105,7 @@ const Achievement = ({ isDarkMode }) => {
               }}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
+              onClick={() => handleClick(sortedCertificates[index])}
               className={`group relative flex items-center justify-between py-4 border-b cursor-pointer transition-colors duration-200 ${
                 isDarkMode
                   ? 'border-zinc-800/60 hover:bg-zinc-900/30'

@@ -21,7 +21,6 @@ const FloatingCV = ({ isDarkMode }) => {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       className="fixed bottom-8 right-8 z-[100]"
     >
-      {/* Glow — zinc tone */}
       <div 
         className={`absolute inset-0 rounded-3xl blur-2xl transition-all duration-1000 ${
           isHighlighted 
@@ -45,7 +44,7 @@ const FloatingCV = ({ isDarkMode }) => {
             : 'hover:scale-105'}
         `}
       >
-        {/* Icon box */}
+    
         <div className={`
           relative flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-500
           ${isDarkMode ? 'bg-zinc-800' : 'bg-zinc-100'}
@@ -60,7 +59,7 @@ const FloatingCV = ({ isDarkMode }) => {
             }`}
           />
           
-          {/* Ping dot */}
+        
           <span className="absolute -top-1 -right-1 flex h-3 w-3">
             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
               isDarkMode ? 'bg-zinc-400' : 'bg-zinc-500'
@@ -71,7 +70,6 @@ const FloatingCV = ({ isDarkMode }) => {
           </span>
         </div>
 
-        {/* Label */}
         <div className={`
           overflow-hidden flex items-center transition-[max-width,opacity,margin] duration-500 ease-in-out
           ${isHighlighted 
@@ -88,7 +86,7 @@ const FloatingCV = ({ isDarkMode }) => {
           </div>
         </div>
 
-        {/* Download icon */}
+
         <div className={`
           overflow-hidden transition-all duration-500 flex items-center
           ${isHighlighted ? 'max-w-[40px] opacity-100' : 'max-w-0 opacity-0'}

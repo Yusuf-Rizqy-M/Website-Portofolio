@@ -13,7 +13,6 @@ const About = ({ isDarkMode }) => {
     (category) => category.skills,
   );
 
-  // Stars — sama seperti Hero & Education
   const stars = useMemo(() => {
     return Array.from({ length: 80 }).map(() => ({
       top: `${Math.random() * 100}%`,
@@ -55,7 +54,7 @@ const About = ({ isDarkMode }) => {
     <section
       id="about"
       onMouseMove={handleMouseMove}
-      className={`relative min-h-screen px-6 py-20 overflow-hidden font-poppins transition-colors duration-500 group/section scroll-mt-28 ${
+      className={`relative min-h-screen px-6 py-4 overflow-hidden font-poppins transition-colors duration-500 group/section scroll-mt-8 ${
         isDarkMode ? "bg-[#0a0a0a] text-white" : "bg-zinc-50 text-slate-900"
       }`}
     >

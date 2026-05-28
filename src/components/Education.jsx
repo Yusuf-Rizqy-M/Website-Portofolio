@@ -68,7 +68,7 @@ const Education = ({ isDarkMode }) => {
   return (
     <section
       id="education"
-      className={`relative px-6 scroll-mt-20 transition-colors duration-500 overflow-hidden ${
+      className={`relative px-6 scroll-mt-8 transition-colors duration-500 overflow-hidden ${
         isDarkMode ? 'bg-[#0a0a0a] text-zinc-100' : 'bg-zinc-50 text-zinc-900'
       }`}
       onMouseMove={handleMouseMove}
@@ -309,6 +309,7 @@ const Education = ({ isDarkMode }) => {
                                     setHoveredImg(null);
                                     setZoomedImg(null);
                                   }}
+                                  onClick={() => window.open(img, '_blank')}
                                 >
                                   <img
                                     src={img}

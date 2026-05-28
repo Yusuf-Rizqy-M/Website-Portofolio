@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
-import { Sun, Moon, Menu, X, Rocket, Zap, Layers, Award, Star } from 'lucide-react';
+import { Sun, Moon, Menu, X } from 'lucide-react';
+import { useLenis } from 'lenis/react';
 
 const navItems = [
-  { name: 'About',       icon: <Rocket size={20} />, href: '#about',       id: 'about' },
-  { name: 'Education',   icon: <Zap size={20} />,    href: '#education',   id: 'education' },
-  { name: 'Projects',    icon: <Layers size={20} />, href: '#projects',    id: 'projects' },
-  { name: 'Achievement', icon: <Star size={20} />,   href: '#achievement', id: 'achievement' },
-  { name: 'Contact',     icon: <Award size={20} />,  href: '#contact',     id: 'contact' },
+  { name: 'About',       href: '#about',       id: 'about' },
+  { name: 'Education',   href: '#education',   id: 'education' },
+  { name: 'Projects',    href: '#projects',    id: 'projects' },
+  { name: 'Achievement', href: '#achievement', id: 'achievement' },
+  { name: 'Contact',     href: '#contact',     id: 'contact' },
 ];
 
 const Navbar = ({ isScrolled, isDarkMode, toggleTheme }) => {
@@ -16,6 +17,22 @@ const Navbar = ({ isScrolled, isDarkMode, toggleTheme }) => {
   const [activeSection, setActiveSection] = useState(null);
 
   const { scrollYProgress } = useScroll();
+  const lenis = useLenis();
+
+  // Fungsi scroll ke section menggunakan Lenis
+  const scrollToSection = (e, id) => {
+    e.preventDefault();
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    lenis?.scrollTo(target, {
+      offset: -80,         // offset agar tidak ketutup navbar
+      duration: 1.4,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+
+    setMobileMenuOpen(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,7 +83,7 @@ const Navbar = ({ isScrolled, isDarkMode, toggleTheme }) => {
           }
         `}
       >
-        {/* Scroll progress bar — zinc tone */}
+        {/* Scroll progress bar */}
         <motion.div
           className={`absolute bottom-0 left-10 right-10 h-[1px] origin-left ${
             isDarkMode ? 'bg-zinc-400' : 'bg-zinc-600'
@@ -75,7 +92,10 @@ const Navbar = ({ isScrolled, isDarkMode, toggleTheme }) => {
         />
 
         {/* Logo */}
-        <div className="flex items-center gap-2 z-50 cursor-pointer">
+        <div
+          className="flex items-center gap-2 z-50 cursor-pointer"
+          onClick={(e) => scrollToSection(e, 'hero')}
+        >
           <span className={`hidden sm:block font-semibold tracking-tighter ${isDarkMode ? 'text-white' : 'text-zinc-900'}`}>
             Yusuf Rizqy<span className={isDarkMode ? 'text-zinc-400' : 'text-zinc-500'}>.</span>
           </span>
@@ -91,9 +111,10 @@ const Navbar = ({ isScrolled, isDarkMode, toggleTheme }) => {
               <a
                 key={item.name}
                 href={item.href}
+                onClick={(e) => scrollToSection(e, item.id)}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                className={`relative px-4 py-2 text-[10px] font-semibold uppercase tracking-widest transition-colors duration-200 z-10 flex items-center gap-2
+                className={`relative px-4 py-2 text-[10px] font-semibold uppercase tracking-widest transition-colors duration-200 z-10
                   ${isActive
                     ? (isDarkMode ? 'text-white' : 'text-zinc-900')
                     : (isDarkMode ? 'text-zinc-500 hover:text-white' : 'text-zinc-400 hover:text-zinc-900')
@@ -150,7 +171,7 @@ const Navbar = ({ isScrolled, isDarkMode, toggleTheme }) => {
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`md:hidden p-2 rounded-full border ${
+            className={`md:hidden p-2 rounded-full border transition-all ${
               isDarkMode
                 ? 'bg-zinc-800 border-zinc-700 text-zinc-200'
                 : 'bg-white border-zinc-200 text-zinc-900'
@@ -164,51 +185,50 @@ const Navbar = ({ isScrolled, isDarkMode, toggleTheme }) => {
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className={`absolute top-full left-0 right-0 mt-4 md:hidden p-2 rounded-3xl border shadow-2xl backdrop-blur-2xl
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className={`absolute top-full left-0 right-0 mt-3 md:hidden rounded-2xl border shadow-xl backdrop-blur-xl overflow-hidden
                 ${isDarkMode
-                  ? 'bg-zinc-900/90 border-zinc-800'
-                  : 'bg-white/90 border-zinc-200'
+                  ? 'bg-zinc-900/95 border-zinc-800'
+                  : 'bg-white/95 border-zinc-200'
                 }`}
             >
-              <div className="flex flex-col gap-1">
-                {navItems.map((item) => {
-                  const isActive = activeSection === item.id;
-                  return (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-4 p-4 rounded-2xl transition-all
-                        ${isActive
-                          ? (isDarkMode ? 'bg-zinc-800 text-white' : 'bg-zinc-100 text-zinc-900')
-                          : (isDarkMode ? 'hover:bg-zinc-800 text-zinc-400 hover:text-white' : 'hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900')
+              {navItems.map((item, index) => {
+                const isActive = activeSection === item.id;
+                return (
+                  <motion.a
+                    key={item.name}
+                    href={item.href}
+                    onClick={(e) => scrollToSection(e, item.id)}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.04, duration: 0.2 }}
+                    className={`flex items-center justify-between px-6 py-4 transition-colors duration-200 border-b last:border-b-0
+                      ${isDarkMode ? 'border-zinc-800/60' : 'border-zinc-100'}
+                      ${isActive
+                        ? (isDarkMode ? 'text-white' : 'text-zinc-900')
+                        : (isDarkMode ? 'text-zinc-500 hover:text-white' : 'text-zinc-400 hover:text-zinc-900')
+                      }`}
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
+                      {item.name}
+                    </span>
+
+                    {isActive && (
+                      <motion.span
+                        layoutId="mobile-active-dot"
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          isDarkMode ? 'bg-zinc-300' : 'bg-zinc-700'
                         }`}
-                    >
-                      <span className={`p-2 rounded-lg transition-colors ${
-                        isDarkMode
-                          ? (isActive ? 'bg-zinc-700 text-zinc-200' : 'bg-zinc-800 text-zinc-400')
-                          : (isActive ? 'bg-zinc-200 text-zinc-800' : 'bg-zinc-100 text-zinc-500')
-                      }`}>
-                        {item.icon}
-                      </span>
-                      <span className="font-semibold text-[10px] uppercase tracking-widest">{item.name}</span>
-                      {isActive && (
-                        <motion.span
-                          layoutId="mobile-active-dot"
-                          className={`ml-auto w-1.5 h-1.5 rounded-full ${
-                            isDarkMode ? 'bg-zinc-300' : 'bg-zinc-700'
-                          }`}
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                        />
-                      )}
-                    </a>
-                  );
-                })}
-              </div>
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                      />
+                    )}
+                  </motion.a>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>

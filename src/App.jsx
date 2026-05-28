@@ -12,6 +12,7 @@ import Achievement from './components/Achievement';
 import Contact from './components/Contact';
 import Blog from './pages/Blog';
 import Education from './components/Education';
+import SplashScreen from './components/SplashScreen';
 import 'lenis/dist/lenis.css'
 import './App.css'
 import { Helmet } from "react-helmet"
@@ -65,24 +66,24 @@ function AppContent({ isDarkMode, toggleTheme, isScrolled, glassStyle, textSub, 
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // ✅ Baca localStorage langsung saat init — tidak ada delay/flash
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  const [showSplash, setShowSplash] = useState(true);
 
   const location = useLocation();
-
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      setIsDarkMode(savedTheme === "dark");
-    }
-  }, []);
-
+  // Simpan theme ke localStorage setiap kali berubah
   useEffect(() => {
     localStorage.setItem("theme", isDarkMode ? "dark" : "light");
   }, [isDarkMode]);
 
+  // Scroll & mouse listeners
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     const handleMouseMove = ({ clientX, clientY }) => {
@@ -99,6 +100,12 @@ function App() {
     };
   }, [mouseX, mouseY]);
 
+  // Splash screen — tampil 2.2 detik lalu animasi keluar
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 2200);
+    return () => clearTimeout(timer);
+  }, []);
+
   const toggleTheme = () => setIsDarkMode(prev => !prev);
 
   const glassStyle = isDarkMode
@@ -110,7 +117,12 @@ function App() {
 
   return (
     <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
-      <div className={`min-h-screen transition-colors duration-500 font-poppins relative ${isDarkMode ? 'bg-[#030712] text-white' : 'bg-[#f8fafc] text-gray-900'}`}>
+
+      <SplashScreen isVisible={showSplash} isDarkMode={isDarkMode} />
+
+      <div className={`min-h-screen transition-colors duration-500 font-poppins relative ${
+        isDarkMode ? 'bg-[#030712] text-white' : 'bg-[#f8fafc] text-gray-900'
+      }`}>
 
         <Helmet>
           <meta name="description" content="Portfolio Yusuf Rizqy Mubarok, Software Developer dari Indonesia." />

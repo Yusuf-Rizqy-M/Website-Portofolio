@@ -25,7 +25,7 @@ const Contact = ({ isDarkMode }) => {
   return (
     <section
       id="contact"
-      className={`relative py-20 px-6 scroll-mt-20 transition-colors duration-500 overflow-hidden ${
+      className={`relative py-10 px-6 scroll-mt-8 transition-colors duration-500 overflow-hidden ${
         isDarkMode ? 'bg-[#0a0a0a]' : 'bg-zinc-50'
       }`}
     >
