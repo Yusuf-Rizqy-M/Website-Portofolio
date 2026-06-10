@@ -1,36 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Send, MapPin, Clock } from 'lucide-react';
-import fotoProfil from '../assets/filkom.jpeg';
 import { useLenis } from 'lenis/react';
+import fotoProfil from '../assets/filkom.jpeg';
+import { profile } from '../data/portofoliodata';
 
-const WishMeteor = ({ id }) => {
+const METEOR_STYLE = (
+  <style>{`
+    @keyframes meteor-fall {
+      0% { transform: rotate(135deg) translateX(0); opacity: 0; }
+      10% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { transform: rotate(135deg) translateX(-100vh); opacity: 0; }
+    }
+    .animate-meteor-fall {
+      animation: meteor-fall linear infinite;
+      transform-origin: left center;
+    }
+  `}</style>
+);
+
+const WishMeteor = memo(() => {
   const [style, setStyle] = useState({});
 
   useEffect(() => {
-    const generateStyle = () => {
-      const left = Math.random() * 100;
-      const duration = Math.random() * 1.5 + 0.8;
-      const delay = Math.random() * 8;
-      const size = Math.random() * 1.5 + 1;
-      const tailWidth = Math.random() * 100 + 100;
+    const left = Math.random() * 100;
+    const duration = Math.random() * 1.5 + 0.8;
+    const delay = Math.random() * 8;
+    const size = Math.random() * 1.5 + 1;
+    const tailWidth = Math.random() * 100 + 100;
 
-      setStyle({
-        left: `${left}%`,
-        top: `-5%`,
-        width: `${size}px`,
-        height: `${size}px`,
-        animationDuration: `${duration}s`,
-        animationDelay: `${delay}s`,
-        '--tail-width': `${tailWidth}px`,
-      });
-    };
-    generateStyle();
+    setStyle({
+      left: `${left}%`,
+      top: `-5%`,
+      width: `${size}px`,
+      height: `${size}px`,
+      animationDuration: `${duration}s`,
+      animationDelay: `${delay}s`,
+      '--tail-width': `${tailWidth}px`,
+    });
   }, []);
 
   return (
     <span
-      key={id}
       style={style}
       className="absolute animate-meteor-fall rounded-full bg-zinc-200 shadow-[0_0_15px_1px_rgba(255,255,255,0.8)] opacity-0"
     >
@@ -40,15 +52,17 @@ const WishMeteor = ({ id }) => {
       />
     </span>
   );
-};
+});
 
-const Hero = ({ isDarkMode, textSub }) => {
+WishMeteor.displayName = 'WishMeteor';
+
+const Hero = ({ isDarkMode }) => {
   const [time, setTime] = useState(new Date());
   const [isHovered, setIsHovered] = useState(false);
-  const lenis = useLenis(); 
+  const lenis = useLenis();
 
   useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
+    const timer = setInterval(() => setTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
@@ -60,7 +74,6 @@ const Hero = ({ isDarkMode, textSub }) => {
     });
   };
 
-  
   const scrollToContact = (e) => {
     e.preventDefault();
     const target = document.getElementById('contact');
@@ -78,23 +91,12 @@ const Hero = ({ isDarkMode, textSub }) => {
         isDarkMode ? "bg-[#0a0a0a] text-zinc-100" : "bg-zinc-50 text-zinc-900"
       }`}
     >
-      <style>{`
-        @keyframes meteor-fall {
-          0% { transform: rotate(135deg) translateX(0); opacity: 0; }
-          10% { opacity: 1; }
-          70% { opacity: 1; }
-          100% { transform: rotate(135deg) translateX(-100vh); opacity: 0; }
-        }
-        .animate-meteor-fall {
-          animation: meteor-fall linear infinite;
-          transform-origin: left center;
-        }
-      `}</style>
+      {METEOR_STYLE}
 
       <div
-        className={`absolute inset-0 z-0 pointer-events-none ${
+        className={`absolute inset-0 z-0 pointer-events-none transition-opacity duration-500 ${
           isDarkMode
-            ? "opacity-[0.015] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)]"
+            ? "opacity-[0.02] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)]"
             : "opacity-[0.06] bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)]"
         }`}
         style={{ backgroundSize: '45px 45px' }}
@@ -102,7 +104,9 @@ const Hero = ({ isDarkMode, textSub }) => {
 
       {isDarkMode && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(12)].map((_, i) => <WishMeteor key={i} id={i} />)}
+          {[...Array(12)].map((_, i) => (
+            <WishMeteor key={`meteor-${i}`} />
+          ))}
         </div>
       )}
 
@@ -118,13 +122,13 @@ const Hero = ({ isDarkMode, textSub }) => {
             <div
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
-              className={`w-28 h-28 rounded-full overflow-hidden border-2 shadow-lg ${
+              className={`w-28 h-28 rounded-full overflow-hidden border-2 shadow-lg transition-colors ${
                 isDarkMode ? 'border-zinc-800' : 'border-zinc-200'
               }`}
             >
               <img
                 src={fotoProfil}
-                alt="Profile"
+                alt={`${profile.name} Profile`}
                 className={`w-full h-full object-cover transition-all duration-700 ${
                   isHovered ? 'grayscale-0 scale-110' : 'grayscale scale-100'
                 }`}
@@ -137,8 +141,8 @@ const Hero = ({ isDarkMode, textSub }) => {
             onMouseLeave={() => setIsHovered(false)}
             className={`hidden lg:block relative w-full max-w-[340px] aspect-[3/4] rounded-[2rem] overflow-hidden transition-all duration-700 ${
               isDarkMode
-                ? 'ring-1 ring-white/8 shadow-[0_32px_80px_rgba(0,0,0,0.6)]'
-                : 'ring-1 ring-black/6 shadow-[0_24px_60px_rgba(0,0,0,0.10)]'
+                ? 'ring-1 ring-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.6)]'
+                : 'ring-1 ring-black/5 shadow-[0_24px_60px_rgba(0,0,0,0.10)]'
             }`}
             style={{
               transform: isHovered ? 'translateY(-6px)' : 'translateY(0px)',
@@ -147,7 +151,7 @@ const Hero = ({ isDarkMode, textSub }) => {
           >
             <img
               src={fotoProfil}
-              alt="Profile"
+              alt={`${profile.name} Profile`}
               className={`w-full h-full object-cover transition-all duration-1000 ease-in-out ${
                 isHovered ? 'grayscale-0 scale-105' : 'grayscale scale-100'
               }`}
@@ -162,8 +166,8 @@ const Hero = ({ isDarkMode, textSub }) => {
                 isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
               }`}
             >
-              <span className="text-white/90 text-xs font-medium tracking-wide">Yusuf Rizqy.</span>
-              <span className="text-white/50 text-xs">Software Engineer</span>
+              <span className="text-white/90 text-xs font-medium tracking-wide">{profile.name}.</span>
+              <span className="text-white text-xs">Software Developer</span>
             </div>
           </div>
         </motion.div>
@@ -185,7 +189,7 @@ const Hero = ({ isDarkMode, textSub }) => {
             }`}
           >
             <MapPin size={12} className={isDarkMode ? "text-zinc-100" : "text-zinc-900"} />
-            <span>Kudus, Indonesia</span>
+            <span>{profile.location}</span>
           </motion.div>
 
           <h1 className="text-5xl sm:text-5xl md:text-7xl font-bold mb-3 tracking-tighter">
@@ -193,7 +197,7 @@ const Hero = ({ isDarkMode, textSub }) => {
           </h1>
 
           <h2 className={`text-lg sm:text-xl md:text-2xl font-medium mb-4 ${isDarkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
-            A <span className={isDarkMode ? 'text-white' : 'text-zinc-900'}>Software Engineer</span> based in Indonesia
+            A <span className={isDarkMode ? 'text-white' : 'text-zinc-900'}>{profile.title}</span> based in Indonesia
           </h2>
 
           <p className={`text-base sm:text-base md:text-lg mb-8 leading-relaxed font-light max-w-lg mx-auto lg:mx-0 ${
@@ -210,7 +214,7 @@ const Hero = ({ isDarkMode, textSub }) => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               href="#contact"
-              onClick={scrollToContact} 
+              onClick={scrollToContact}
               className={`group flex items-center gap-3 px-7 py-3 rounded-2xl text-sm font-bold transition-all duration-300 border shadow-2xl
                 ${isDarkMode
                   ? 'bg-zinc-100 border-zinc-100 text-zinc-900 hover:bg-transparent hover:text-white'

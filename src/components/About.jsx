@@ -54,7 +54,7 @@ const About = ({ isDarkMode }) => {
     <section
       id="about"
       onMouseMove={handleMouseMove}
-      className={`relative min-h-screen px-6 py-4 overflow-hidden font-poppins transition-colors duration-500 group/section scroll-mt-8 ${
+      className={`relative min-h-fit px-6 py-12 overflow-hidden font-poppins transition-colors duration-500 group/section scroll-mt-8 ${
         isDarkMode ? "bg-[#0a0a0a] text-white" : "bg-zinc-50 text-slate-900"
       }`}
     >
@@ -78,7 +78,6 @@ const About = ({ isDarkMode }) => {
         `}
       </style>
 
-      {/* Stars background */}
       <div className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${isDarkMode ? 'opacity-100' : 'opacity-40'}`}>
         {stars.map((star, index) => (
           <div
@@ -129,7 +128,8 @@ const About = ({ isDarkMode }) => {
           </MotionLink>
         </div>
 
-        <div className="max-w-5xl mb-20">
+        {/* 2. MENGURANGI mb-20 MENJADI mb-12 */}
+        <div className="max-w-5xl mb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -147,7 +147,8 @@ const About = ({ isDarkMode }) => {
           </motion.div>
         </div>
 
-        <div className="mb-24">
+        {/* 3. MENGURANGI mb-24 MENJADI mb-12 UNTUK BAGIAN KONTEN TERAKHIR */}
+        <div className="mb-12">
           <motion.h3
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -183,13 +184,6 @@ const About = ({ isDarkMode }) => {
               </motion.div>
             ))}
           </div>
-        </div>
-
-        <div
-          className="flex flex-col items-center"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
         </div>
       </div>
     </section>

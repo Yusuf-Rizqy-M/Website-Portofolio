@@ -13,13 +13,25 @@ import Contact from './components/Contact';
 import Blog from './pages/Blog';
 import Education from './components/Education';
 import SplashScreen from './components/SplashScreen';
+import Others from './components/Others';
 import 'lenis/dist/lenis.css'
 import './App.css'
 import { Helmet } from "react-helmet"
 import favicon from './assets/logo.png';
 
-function AppContent({ isDarkMode, toggleTheme, isScrolled, glassStyle, textSub, isBlogPage }) {
+
+function AppContent({ isDarkMode, toggleTheme, isScrolled, glassStyle, textSub, isBlogPage, showSplash }) {
   const lenis = useLenis();
+
+  useEffect(() => {
+    if (!lenis) return;
+    
+    if (showSplash) {
+      lenis.stop();
+    } else {
+      lenis.start();
+    }
+  }, [lenis, showSplash]);
 
   useEffect(() => {
     const handleModalChange = (e) => {
@@ -44,9 +56,11 @@ function AppContent({ isDarkMode, toggleTheme, isScrolled, glassStyle, textSub, 
           <main>
             <Hero isDarkMode={isDarkMode} textSub={textSub} />
             <About isDarkMode={isDarkMode} textSub={textSub} />
+            <Projects isDarkMode={isDarkMode} />
             <Education isDarkMode={isDarkMode} textSub={textSub} />
             <Achievement isDarkMode={isDarkMode} textSub={textSub} />
             <Contact isDarkMode={isDarkMode} />
+            <Others isDarkMode={isDarkMode} />
           </main>
         } />
 
@@ -66,24 +80,19 @@ function AppContent({ isDarkMode, toggleTheme, isScrolled, glassStyle, textSub, 
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
-
-  // ✅ Baca localStorage langsung saat init — tidak ada delay/flash
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
-
   const [showSplash, setShowSplash] = useState(true);
 
   const location = useLocation();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Simpan theme ke localStorage setiap kali berubah
   useEffect(() => {
     localStorage.setItem("theme", isDarkMode ? "dark" : "light");
   }, [isDarkMode]);
 
-  // Scroll & mouse listeners
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     const handleMouseMove = ({ clientX, clientY }) => {
@@ -100,7 +109,14 @@ function App() {
     };
   }, [mouseX, mouseY]);
 
-  // Splash screen — tampil 2.2 detik lalu animasi keluar
+  useEffect(() => {
+    if (showSplash) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [showSplash]);
+
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 2200);
     return () => clearTimeout(timer);
@@ -116,14 +132,12 @@ function App() {
   const isBlogPage = location.pathname === '/blog';
 
   return (
-    <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
-
+    <ReactLenis root options={{ lerp: 0.1, duration: 1.3, smoothWheel: true }}>
       <SplashScreen isVisible={showSplash} isDarkMode={isDarkMode} />
 
       <div className={`min-h-screen transition-colors duration-500 font-poppins relative ${
         isDarkMode ? 'bg-[#030712] text-white' : 'bg-[#f8fafc] text-gray-900'
       }`}>
-
         <Helmet>
           <meta name="description" content="Portfolio Yusuf Rizqy Mubarok, Software Developer dari Indonesia." />
           <link rel="icon" type="image/png" href={favicon} sizes="16x16" />
@@ -137,6 +151,7 @@ function App() {
           glassStyle={glassStyle}
           textSub={textSub}
           isBlogPage={isBlogPage}
+          showSplash={showSplash}
         />
       </div>
     </ReactLenis>
